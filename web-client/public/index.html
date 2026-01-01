@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EchoMemory | Reconstruct Your Story</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0f172a">
+</head>
+
+<body>
+    <div id="app" class="min-h-screen">
+
+        <!-- 1. LANDING VIEW (Logged Out) -->
+        <div id="landing-view" class="fade-in-up">
+            <nav class="container flex justify-between items-center py-8">
+                <h1 class="logo-vibrant">EchoMemory</h1>
+                <div class="flex gap-4">
+                    <button onclick="scrollToAuth()" class="nav-link">Sign In</button>
+                    <button onclick="scrollToAuth('register')" class="btn-elite" style="padding: 0.75rem 1.5rem;">Get
+                        Started</button>
+                </div>
+            </nav>
+
+            <section class="hero-kinetic container">
+                <h2 class="hero-title">Your Memories,<br>Perfectly Reclaimed.</h2>
+                <p class="hero-subtitle">EchoMemory uses advanced Azure Neural Processing to reconstruct fading memories
+                    from voice fragments and images, preserving your history in high definition.</p>
+                <!-- Theme Toggle -->
+                <button id="theme-toggle" class="theme-toggle" title="Toggle Neural Theme">
+                    <svg id="theme-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                </button>
+                <div class="flex justify-center gap-6">
+                    <button onclick="scrollToAuth('register')" class="btn-elite">Initialize Your Console</button>
+                    <button class="nav-link" style="border: 1px solid var(--border-glass)">Explore Science</button>
+                </div>
+            </section>
+
+            <section class="container py-24 grid md-cols-3 gap-8">
+                <div class="glass-panel p-8 text-center hover:translate-y-[-10px] transition-transform">
+                    <div class="text-4xl mb-4">🎙️</div>
+                    <h3 class="font-bold text-xl mb-2">Voice Synthesis</h3>
+                    <p class="text-soft text-sm">Turn spoken fragments into structured, empathetic oral histories.</p>
+                </div>
+                <div class="glass-panel p-8 text-center hover:translate-y-[-10px] transition-transform">
+                    <div class="text-4xl mb-4">👁️</div>
+                    <h3 class="font-bold text-xl mb-2">Visual Anchors</h3>
+                    <p class="text-soft text-sm">Upload photos to anchor narrative reconstructions in visual reality.
+                    </p>
+                </div>
+                <div class="glass-panel p-8 text-center hover:translate-y-[-10px] transition-transform">
+                    <div class="text-4xl mb-4">🔐</div>
+                    <h3 class="font-bold text-xl mb-2">Neural Privacy</h3>
+                    <p class="text-soft text-sm">Enterprise-grade encryption for your most precious cognitive data.</p>
+                </div>
+            </section>
+
+            <!-- AUTH ANCHOR -->
+            <div id="auth-anchor" class="py-20">
+                <div id="auth-view" class="auth-card-elite glass-panel mx-auto">
+                    <h2 id="view-title" class="text-4xl font-bold mb-2">Access Console</h2>
+                    <p class="text-soft mb-8">Synchronize your cognitive cloud.</p>
+                    <form id="auth-form" class="space-y-4 text-left">
+                        <div id="name-field" class="hidden">
+                            <input type="text" id="full_name" placeholder="Full Name" class="input-elite">
+                        </div>
+                        <input type="email" id="email" placeholder="Email Address" required class="input-elite">
+                        <input type="password" id="password" placeholder="Secure Password" required class="input-elite">
+                        <button type="submit" id="auth-submit" class="btn-elite w-full">Unlock Console</button>
+                        <p class="text-center mt-8 text-sm text-dim">
+                            <a href="#" id="toggle-auth" class="text-primary-core font-bold">New Identity? Register</a>
+                        </p>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. APP SHELL (Logged In) -->
+        <div id="app-shell" class="hidden app-shell">
+            <!-- PERSISTENT SIDEBAR -->
+            <aside class="side-nav">
+                <div class="mb-12">
+                    <h1 class="logo-vibrant px-4" style="font-size: 1.25rem;">EchoMemory</h1>
+                </div>
+                <nav class="flex flex-col gap-2">
+                    <button class="nav-link active flex items-center gap-3 w-full text-left" data-view="home">
+                        <span>🏠</span> Console Home
+                    </button>
+                    <button class="nav-link flex items-center gap-3 w-full text-left" data-view="dashboard">
+                        <span>🧭</span> Explorer
+                    </button>
+                    <button class="nav-link flex items-center gap-3 w-full text-left" data-view="profile">
+                        <span>👤</span> Identity
+                    </button>
+                    <button class="nav-link flex items-center gap-3 w-full text-left" data-view="settings">
+                        <span>⚙️</span> Preferences
+                    </button>
+                </nav>
+                <div class="mt-auto p-4">
+                    <button id="logout-btn" class="nav-link w-full text-left" style="color: var(--danger-core)">
+                        <span>🚪</span> Exit System
+                    </button>
+                </div>
+            </aside>
+
+            <!-- MAIN DYNAMIC CONTENT -->
+            <main class="content-main flex flex-col">
+                <div class="flex-grow">
+                    <!-- Console Home -->
+                    <div id="home-view" class="fade-in-up">
+                        <header class="mb-12">
+                            <div>
+                                <h2 class="text-4xl font-extrabold mb-4">Neural Console Home</h2>
+                                <p class="text-soft text-lg max-w-2xl">EchoMemory is your secure neural cloud, designed
+                                    to reclaim fading narratives. By bridging voice reflections and visual anchors, we
+                                    reconstruct your history with high-precision AI processing.</p>
+                            </div>
+                        </header>
+                        <div class="grid md-cols-2 gap-8">
+                            <div class="glass-panel p-8">
+                                <h4 class="font-bold text-lg mb-4">Neural Stream Status</h4>
+                                <p class="text-soft text-sm">Your memory stream is active and synchronized across all
+                                    neural anchors. Cognitive data is being processed in real-time.</p>
+                            </div>
+                            <div class="glass-panel p-8">
+                                <h4 class="font-bold text-lg mb-4">Standard Encryption</h4>
+                                <p class="text-soft text-sm">Your narratives are secured with 256-bit neural encryption.
+                                    Your story remains yours alone.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Dashboard -->
+                    <div id="dashboard-view" class="hidden fade-in-up">
+                        <header class="flex justify-between items-end mb-12">
+                            <div>
+                                <h2 class="text-4xl font-extrabold mb-2">Memory Stream</h2>
+                                <p class="text-soft">Continuous neural narrative synthesis.</p>
+                            </div>
+                            <button id="add-memory-btn" class="btn-elite">+ Reflection</button>
+                        </header>
+                        <div id="memory-list" class="grid memory-wall"></div>
+                    </div>
+
+                    <!-- Profile -->
+                    <div id="profile-view" class="hidden fade-in-up">
+                        <div class="max-w-2xl glass-panel p-10">
+                            <h2 class="text-3xl font-bold mb-8">System Identity</h2>
+                            <div id="profile-container"></div>
+                        </div>
+                    </div>
+
+                    <!-- Settings -->
+                    <div id="settings-view" class="hidden fade-in-up">
+                        <div class="max-w-2xl glass-panel p-10">
+                            <h2 class="text-3xl font-bold mb-8">System Preferences</h2>
+                            <div class="space-y-4">
+                                <!-- Settings content -->
+                                <p class="text-dim">Neural sync active. Settings managed via cloud.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PERSISTENT FOOTER FEEDBACK -->
+                <footer class="shell-footer glass-panel mt-12 p-8">
+                    <div class="flex flex-col md-flex-row justify-between items-center gap-6">
+                        <div>
+                            <h4 class="font-bold text-lg mb-1">How is the Neural Accuracy?</h4>
+                            <p class="text-soft text-sm">Your feedback refines our reconstruction models.</p>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <div class="rating-pills mb-0">
+                                <div class="rating-pill" data-value="1">1</div>
+                                <div class="rating-pill" data-value="2">2</div>
+                                <div class="rating-pill" data-value="3">3</div>
+                                <div class="rating-pill" data-value="4">4</div>
+                                <div class="rating-pill" data-value="5">5</div>
+                            </div>
+                            <button id="footer-feedback-btn" class="btn-elite"
+                                style="padding: 0.6rem 1.2rem; font-size: 0.75rem;">Send Insight</button>
+                        </div>
+                    </div>
+                </footer>
+            </main>
+        </div>
+
+    </div>
+
+    <!-- CHATBOT -->
+    <div id="chatbot-bubble-elite" class="hidden">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+        </svg>
+    </div>
+
+    <!-- CHAT WINDOW (Elite Design) -->
+    <div id="chatbot-window-elite" class="hidden glass-panel"
+        style="position: fixed; bottom: 6rem; right: 2rem; width: 380px; height: 550px; display: flex; flex-direction: column; z-index: 2100; overflow: hidden;">
+        <div class="chat-header"
+            style="background: linear-gradient(135deg, var(--primary-core), var(--secondary-core)); padding: 1.5rem;">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h4 class="font-bold text-lg text-white">Echo Assistant</h4>
+                    <p class="text-[0.6rem] text-indigo-100 opacity-80 uppercase tracking-widest">Neural Link Active</p>
+                </div>
+                <button id="close-chat" class="text-white text-2xl hover:opacity-70 transition-opacity">&times;</button>
+            </div>
+        </div>
+
+        <div id="chat-messages" class="chat-messages"
+            style="flex-grow: 1; padding: 1.5rem; overflow-y: auto; background: var(--bg-surface);">
+            <div class="message bot"
+                style="background: var(--bg-deep); color: var(--text-vibrant); padding: 1rem; border-radius: 1.25rem 1.25rem 1.25rem 0.25rem; border: 1px solid var(--border-glass);">
+                Hello! I am your Echo Assistant. Ready to reconstruct.</div>
+        </div>
+
+        <div class="chat-controls"
+            style="display: flex; gap: 0.75rem; padding: 1rem; background: var(--bg-surface); border-top: 1px solid var(--border-glass);">
+            <button class="control-btn" id="chat-mic" title="Voice Input">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+                    <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                    <line x1="12" y1="19" x2="12" y2="23"></line>
+                    <line x1="8" y1="23" x2="16" y2="23"></line>
+                </svg>
+            </button>
+            <button class="control-btn" id="chat-camera" title="Vision Input">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                    <circle cx="12" cy="13" r="4"></circle>
+                </svg>
+            </button>
+        </div>
+
+        <div class="chat-input-container"
+            style="padding: 1rem; background: var(--bg-surface); border-top: 1px solid var(--border-glass);">
+            <div class="flex gap-2">
+                <input type="text" id="chat-input" placeholder="Type inquiry..." class="input-elite"
+                    style="margin-bottom: 0; padding: 0.75rem 1.25rem; border-radius: 1rem;">
+                <button id="chat-send" class="btn-elite" style="padding: 0 1.25rem; border-radius: 1rem;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2.5">
+                        <line x1="22" y1="2" x2="11" y2="13"></line>
+                        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL -->
+    <div id="modal-container"
+        class="hidden fixed inset-0 bg-slate-950/90 backdrop-blur-xl flex items-center justify-center p-6 z-[3000]">
+        <div class="glass-panel max-w-3xl w-full p-12 relative">
+            <button id="close-modal" class="absolute top-8 right-8 text-3xl text-dim">&times;</button>
+            <div id="modal-content"></div>
+        </div>
+    </div>
+
+    <script src="src/app.js?v=2.1.0" type="module"></script>
+</body>
+
+</html>

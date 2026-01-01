@@ -1,0 +1,477 @@
+/* 
+ * EchoMemory Elite Design System v2.0
+ * Concept: Chromatic Clarity & Deep Narrative Space
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+    /* Base Colors (Shared) */
+    --primary-core: #6366f1;
+    --primary-glow: rgba(99, 102, 241, 0.4);
+    --secondary-core: #a855f7;
+    --accent-core: #10b981;
+    --danger-core: #f43f5e;
+
+    /* Dark Mode (Default) */
+    --bg-deep: #0f172a;
+    --bg-surface: #1e293b;
+    --bg-glass: rgba(30, 41, 59, 0.7);
+    --border-glass: rgba(255, 255, 255, 0.1);
+    --text-vibrant: #f8fafc;
+    --text-soft: #94a3b8;
+    --text-dim: #64748b;
+    --grad-mesh: radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
+        radial-gradient(at 100% 0%, rgba(168, 85, 247, 0.15) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(16, 185, 129, 0.1) 0px, transparent 50%);
+}
+
+.light-mode {
+    --bg-deep: #f8fafc;
+    --bg-surface: #ffffff;
+    --bg-glass: rgba(255, 255, 255, 0.8);
+    --border-glass: rgba(0, 0, 0, 0.05);
+    --text-vibrant: #0f172a;
+    --text-soft: #475569;
+    --text-dim: #94a3b8;
+    --grad-mesh: radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.05) 0px, transparent 50%),
+        radial-gradient(at 100% 0%, rgba(168, 85, 247, 0.05) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(16, 185, 129, 0.05) 0px, transparent 50%);
+}
+
+/* 1. Global Reset & Layout */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-font-smoothing: antialiased;
+}
+
+body {
+    font-family: 'Outfit', sans-serif;
+    background-color: var(--bg-deep);
+    background-image: var(--grad-mesh);
+    background-attachment: fixed;
+    color: var(--text-vibrant);
+    line-height: 1.6;
+    min-height: 100vh;
+    overflow-x: hidden;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.container {
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+.flex {
+    display: flex;
+}
+
+.flex-col {
+    flex-direction: column;
+}
+
+.flex-row {
+    flex-direction: row;
+}
+
+.flex-grow {
+    flex-grow: 1;
+}
+
+.grid {
+    display: grid;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.items-center {
+    align-items: center;
+}
+
+.justify-between {
+    justify-content: space-between;
+}
+
+.gap-4 {
+    gap: 1rem;
+}
+
+.gap-8 {
+    gap: 2rem;
+}
+
+.w-full {
+    width: 100%;
+}
+
+/* 2. Elite Components */
+
+/* Advanced Glassmorphism */
+.glass-panel {
+    background: var(--bg-glass);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid var(--border-glass);
+    border-radius: 2rem;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.2);
+    transition: background 0.3s ease, border 0.3s ease;
+}
+
+/* Navigation Shell */
+.app-shell {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    min-height: 100vh;
+}
+
+.side-nav {
+    padding: 2.5rem 1.5rem;
+    border-right: 1px solid var(--border-glass);
+    background: var(--bg-glass);
+    backdrop-filter: blur(20px);
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    position: sticky;
+    top: 0;
+}
+
+.side-nav .nav-link {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+    margin-bottom: 0.5rem;
+    border-radius: 1.25rem;
+    color: var(--text-soft);
+    text-decoration: none;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    width: 100%;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+}
+
+.side-nav .nav-link:hover,
+.side-nav .nav-link.active {
+    background: var(--primary-core);
+    color: white;
+    transform: translateX(5px);
+}
+
+.logo-vibrant {
+    font-size: 1.5rem;
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    background: linear-gradient(135deg, var(--text-vibrant) 0%, var(--primary-core) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 3rem;
+}
+
+/* Header & Content Alignment */
+.content-main {
+    padding: 3rem;
+    width: 100%;
+    overflow-y: auto;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+header {
+    margin-bottom: 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 2rem;
+}
+
+/* Buttons with Kinetic Energy */
+.btn-elite {
+    background: linear-gradient(135deg, var(--primary-core), var(--secondary-core));
+    color: white;
+    padding: 0.8rem 1.8rem;
+    border-radius: 1.25rem;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 10px 20px -5px var(--primary-glow);
+    white-space: nowrap;
+}
+
+.btn-elite:hover {
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 20px 30px -10px var(--primary-glow);
+    filter: brightness(1.1);
+}
+
+.btn-elite:active {
+    transform: scale(0.98);
+}
+
+/* Elite Media Views */
+.media-container {
+    width: 100%;
+    border-radius: 2rem;
+    overflow: hidden;
+    background: #000;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+/* 3. Narrative Cards (Memories) */
+.memory-wall {
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 2rem;
+}
+
+.memory-card-elite {
+    background: linear-gradient(165deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 2.5rem;
+    padding: 2.5rem;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.memory-card-elite:hover {
+    border-color: var(--primary-core);
+    background: rgba(99, 102, 241, 0.05);
+    transform: translateY(-10px);
+}
+
+.source-tag {
+    font-size: 0.65rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--primary-core);
+    margin-bottom: 1rem;
+    display: block;
+}
+
+.narrative-preview {
+    font-size: 1.1rem;
+    font-weight: 400;
+    color: var(--text-vibrant);
+    margin-bottom: 2rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.confidence-indicator {
+    height: 4px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+}
+
+.confidence-progress {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent-core), #34d399);
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
+}
+
+/* 4. Chatbot - The Pulsing Spark */
+#chatbot-bubble-elite {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    width: 60px;
+    height: 60px;
+    background: var(--primary-core);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    cursor: pointer;
+    z-index: 2000;
+    box-shadow: 0 10px 30px var(--primary-glow);
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes pulseGlow {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 10px 30px var(--primary-glow);
+    }
+
+    50% {
+        transform: scale(1.1);
+        box-shadow: 0 15px 45px var(--primary-glow);
+    }
+
+    100% {
+        transform: scale(1);
+        box-shadow: 0 10px 30px var(--primary-glow);
+    }
+}
+
+#chatbot-window-elite {
+    position: fixed;
+    bottom: 6rem;
+    right: 2rem;
+    width: 380px;
+    height: 550px;
+    display: flex;
+    flex-direction: column;
+    z-index: 2001;
+    overflow: hidden;
+}
+
+.chat-controls {
+    display: flex;
+    gap: 0.75rem;
+    padding: 1rem;
+    background: var(--bg-surface);
+    border-top: 1px solid var(--border-glass);
+}
+
+.control-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-glass);
+    color: var(--text-vibrant);
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.control-btn:hover {
+    background: var(--primary-core);
+    color: white;
+}
+
+/* 5. Inputs & Auth Card */
+.auth-card-elite {
+    max-width: 450px;
+    margin: 8rem auto;
+    padding: 4rem;
+    text-align: center;
+}
+
+.input-elite {
+    width: 100%;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 1.25rem 1.5rem;
+    border-radius: 1.25rem;
+    color: white;
+    font-family: inherit;
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.input-elite:focus {
+    outline: none;
+    border-color: var(--primary-core);
+    background: rgba(0, 0, 0, 0.4);
+    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+}
+
+/* Animations */
+.fade-in-up {
+    animation: fadeInUp 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Authenticated Shell Footer */
+.shell-footer {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-glass);
+    border-radius: 1.5rem;
+    margin-top: 3rem;
+    padding: 2rem;
+}
+
+.rating-pills {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.rating-pill {
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-deep);
+    border: 1px solid var(--border-glass);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: 0.2s;
+    font-weight: 600;
+}
+
+.rating-pill:hover,
+.rating-pill.selected {
+    background: var(--primary-core);
+    color: white;
+    border-color: var(--primary-core);
+}
+
+/* Authenticated Shell Footer */
+.shell-footer {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-glass);
+    border-radius: 2rem;
+}
+
+.md-flex-row {
+    flex-direction: row;
+}
+
+@media (max-width: 768px) {
+    .md-flex-row {
+        flex-direction: column;
+    }
+
+    .shell-footer {
+        text-align: center;
+    }
+}
+/* Final Layout & Theme Fixes */
+.hero-kinetic { position: relative; padding: 10rem 0; text-align: center; overflow: hidden; }
+.hero-title { font-size: 6rem; font-weight: 900; line-height: 1; margin-bottom: 2rem; background: linear-gradient(to bottom, #fff, #6366f1); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+.hero-subtitle { font-size: 1.5rem; color: var(--text-soft); max-width: 800px; margin: 0 auto 3rem; }
+.landing-view { display: block; }
+@media (max-width: 1024px) {
+    .app-shell { grid-template-columns: 1fr; }
+    .side-nav { position: fixed; bottom: 0; left: 0; width: 100%; height: 70px; flex-direction: row; padding: 0 1rem; align-items: center; justify-content: space-around; border-right: none; border-top: 1px solid var(--border-glass); z-index: 2000; }
+    .side-nav .nav-link { flex-direction: column; gap: 0.25rem; padding: 0.5rem; margin-bottom: 0; font-size: 0.7rem; width: auto; }
+    .side-nav .logo-vibrant, .side-nav #logout-btn { display: none; }
+    .content-main { padding: 2rem; padding-bottom: 100px; }
+    header { flex-direction: column; align-items: flex-start; gap: 1.5rem; }
+    .hero-title { font-size: 3rem; }
+}
+.theme-toggle { position: fixed; top: 1.5rem; right: 2rem; z-index: 2100; background: var(--bg-glass); border: 1px solid var(--border-glass); color: var(--text-vibrant); width: 45px; height: 45px; border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(10px); }

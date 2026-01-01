@@ -1,0 +1,23 @@
+{
+    "app_name": "EchoMemory",
+    "welcome_back": "Welcome Back",
+    "join_community": "Join EchoMemory",
+    "login": "Login",
+    "register": "Create Account",
+    "email": "Email Address",
+    "password": "Password",
+    "full_name": "Full Name",
+    "your_memories": "Your Memories",
+    "new_reflection": "New Reflection",
+    "profile": "Profile",
+    "settings": "Settings",
+    "logout": "Logout",
+    "home": "Home",
+    "confidence": "Confidence",
+    "processing": "Synthesizing your perspective...",
+    "no_memories": "No memories yet. Start by sharing a reflection.",
+    "save": "Save Changes",
+    "high_contrast": "High Contrast Mode",
+    "notifications": "Email Notifications",
+    "export_data": "Export My Data"
+}

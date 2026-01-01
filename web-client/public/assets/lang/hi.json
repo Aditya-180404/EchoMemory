@@ -1,0 +1,23 @@
+{
+    "app_name": "EchoMemory",
+    "welcome_back": "वापसी पर आपका स्वागत है",
+    "join_community": "EchoMemory से जुड़ें",
+    "login": "लॉगिन",
+    "register": "खाता बनाएं",
+    "email": "ईमेल पता",
+    "password": "पासवर्ड",
+    "full_name": "पूरा नाम",
+    "your_memories": "आपकी यादें",
+    "new_reflection": "नया चिंतन",
+    "profile": "प्रोफ़ाइल",
+    "settings": "सेटिंग्स",
+    "logout": "लॉगआउट",
+    "home": "होम",
+    "confidence": "आत्मविश्वास स्कोर",
+    "processing": "आपकी यादों को संजोया जा रहा है...",
+    "no_memories": "अभी तक कोई यादें नहीं। एक चिंतन साझा करें।",
+    "save": "बदलाव सहेजें",
+    "high_contrast": "उच्च कंट्रास्ट मोड",
+    "notifications": "ईमेल सूचनाएं",
+    "export_data": "मेरा डेटा निर्यात करें"
+}
