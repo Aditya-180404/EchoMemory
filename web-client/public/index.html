@@ -18,9 +18,9 @@
             <nav class="container flex justify-between items-center py-8">
                 <h1 class="logo-vibrant">EchoMemory</h1>
                 <div class="flex gap-4">
-                    <button onclick="scrollToAuth()" class="nav-link">Sign In</button>
-                    <button onclick="scrollToAuth('register')" class="btn-elite" style="padding: 0.75rem 1.5rem;">Get
-                        Started</button>
+                    <a href="login.html" class="nav-link">Sign In</a>
+                    <a href="register.html" class="btn-elite"
+                        style="padding: 0.75rem 1.5rem; text-decoration: none;">Get Started</a>
                 </div>
             </nav>
 
@@ -36,7 +36,7 @@
                     </svg>
                 </button>
                 <div class="flex justify-center gap-6">
-                    <button onclick="scrollToAuth('register')" class="btn-elite">Initialize Your Console</button>
+                    <a href="register.html" class="btn-elite" style="text-decoration: none;">Initialize Your Console</a>
                     <button class="nav-link" style="border: 1px solid var(--border-glass)">Explore Science</button>
                 </div>
             </section>
@@ -60,68 +60,71 @@
                 </div>
             </section>
 
-            <!-- AUTH ANCHOR -->
-            <div id="auth-anchor" class="py-20">
-                <div id="auth-view" class="auth-card-elite glass-panel mx-auto">
-                    <h2 id="view-title" class="text-4xl font-bold mb-2">Access Console</h2>
-                    <p class="text-soft mb-8">Synchronize your cognitive cloud.</p>
-                    <form id="auth-form" class="space-y-4 text-left">
-                        <div id="name-field" class="hidden">
-                            <input type="text" id="full_name" placeholder="Full Name" class="input-elite">
-                        </div>
-                        <input type="email" id="email" placeholder="Email Address" required class="input-elite">
-                        <input type="password" id="password" placeholder="Secure Password" required class="input-elite">
-                        <button type="submit" id="auth-submit" class="btn-elite w-full">Unlock Console</button>
-                        <p class="text-center mt-8 text-sm text-dim">
-                            <a href="#" id="toggle-auth" class="text-primary-core font-bold">New Identity? Register</a>
-                        </p>
-                    </form>
-                </div>
-            </div>
+            <!-- AUTH SECTION REMOVED (Relocated to login.html / register.html) -->
         </div>
 
         <!-- 2. APP SHELL (Logged In) -->
-        <div id="app-shell" class="hidden app-shell">
-            <!-- PERSISTENT SIDEBAR -->
-            <aside class="side-nav">
-                <div class="mb-12">
-                    <h1 class="logo-vibrant px-4" style="font-size: 1.25rem;">EchoMemory</h1>
+        <div id="app-shell" class="hidden app-shell flex flex-col">
+            <!-- TOP NAVBAR -->
+            <nav class="top-navbar glass-panel">
+                <div class="container flex justify-between items-center h-full">
+                    <div class="flex items-center gap-6">
+                        <a href="index.html" class="logo-vibrant"
+                            style="margin-bottom: 0; font-size: 1.25rem; text-decoration: none;">EchoMemory</a>
+                        <div class="desktop-nav-links flex gap-2">
+                            <button class="nav-link active" data-view="home">Home</button>
+                            <button class="nav-link" data-view="dashboard">Explorer</button>
+                            <button class="nav-link" data-view="profile">Identity</button>
+                            <button class="nav-link" data-view="settings">Preferences</button>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-4">
+                        <button id="logout-btn-top" class="nav-link"
+                            style="color: var(--danger-core); font-weight: 600;">Exit</button>
+                        <!-- Hamburger Icon -->
+                        <button id="hamburger-trigger" class="mobile-only text-white" aria-label="Toggle Menu">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <line x1="3" y1="12" x2="21" y2="12"></line>
+                                <line x1="3" y1="6" x2="21" y2="6"></line>
+                                <line x1="3" y1="18" x2="21" y2="18"></line>
+                            </svg>
+                        </button>
+                    </div>
                 </div>
-                <nav class="flex flex-col gap-2">
-                    <button class="nav-link active flex items-center gap-3 w-full text-left" data-view="home">
-                        <span>🏠</span> Console Home
-                    </button>
-                    <button class="nav-link flex items-center gap-3 w-full text-left" data-view="dashboard">
-                        <span>🧭</span> Explorer
-                    </button>
-                    <button class="nav-link flex items-center gap-3 w-full text-left" data-view="profile">
-                        <span>👤</span> Identity
-                    </button>
-                    <button class="nav-link flex items-center gap-3 w-full text-left" data-view="settings">
-                        <span>⚙️</span> Preferences
-                    </button>
-                </nav>
-                <div class="mt-auto p-4">
-                    <button id="logout-btn" class="nav-link w-full text-left" style="color: var(--danger-core)">
-                        <span>🚪</span> Exit System
-                    </button>
+            </nav>
+
+            <!-- MOBILE MENU (Hidden by default) -->
+            <div id="mobile-nav-panel" class="hidden mobile-nav-panel glass-panel">
+                <div class="flex flex-col p-6 gap-4">
+                    <button class="nav-link" data-view="home">🏠 Console Home</button>
+                    <button class="nav-link" data-view="dashboard">🧭 Explorer</button>
+                    <button class="nav-link" data-view="profile">👤 Identity</button>
+                    <button class="nav-link" data-view="settings">⚙️ Preferences</button>
+                    <hr class="opacity-10">
+                    <button id="logout-btn-mobile" class="nav-link" style="color: var(--danger-core)">🚪 Exit
+                        System</button>
                 </div>
-            </aside>
+            </div>
 
             <!-- MAIN DYNAMIC CONTENT -->
             <main class="content-main flex flex-col">
                 <div class="flex-grow">
                     <!-- Console Home -->
                     <div id="home-view" class="fade-in-up">
-                        <header class="mb-12">
-                            <div>
-                                <h2 class="text-4xl font-extrabold mb-4">Neural Console Home</h2>
-                                <p class="text-soft text-lg max-w-2xl">EchoMemory is your secure neural cloud, designed
-                                    to reclaim fading narratives. By bridging voice reflections and visual anchors, we
-                                    reconstruct your history with high-precision AI processing.</p>
+                        <section class="hero-kinetic">
+                            <h2 class="hero-title" style="font-size: 4rem;">Your Memories,<br>Perfectly Reclaimed.</h2>
+                            <p class="hero-subtitle">Neural link active. Your narrative reconstruction is synchronized
+                                and secure within the cognitive cloud.</p>
+                            <div class="flex justify-center gap-6 mt-8">
+                                <button class="btn-elite" onclick="switchView('dashboard')">View Memory Stream</button>
+                                <button class="nav-link" style="border: 1px solid var(--border-glass)"
+                                    onclick="switchView('profile')">Manage Identity</button>
                             </div>
-                        </header>
-                        <div class="grid md-cols-2 gap-8">
+                        </section>
+
+                        <div class="grid md-cols-2 gap-8 mt-12 pb-20">
                             <div class="glass-panel p-8">
                                 <h4 class="font-bold text-lg mb-4">Neural Stream Status</h4>
                                 <p class="text-soft text-sm">Your memory stream is active and synchronized across all
@@ -210,7 +213,17 @@
                     <h4 class="font-bold text-lg text-white">Echo Assistant</h4>
                     <p class="text-[0.6rem] text-indigo-100 opacity-80 uppercase tracking-widest">Neural Link Active</p>
                 </div>
-                <button id="close-chat" class="text-white text-2xl hover:opacity-70 transition-opacity">&times;</button>
+                <div class="flex items-center gap-3">
+                    <button id="toggle-history" title="Neural Log"
+                        class="text-white hover:opacity-70 transition-opacity">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </button>
+                    <button id="close-chat"
+                        class="text-white text-2xl hover:opacity-70 transition-opacity">&times;</button>
+                </div>
             </div>
         </div>
 
@@ -219,6 +232,12 @@
             <div class="message bot"
                 style="background: var(--bg-deep); color: var(--text-vibrant); padding: 1rem; border-radius: 1.25rem 1.25rem 1.25rem 0.25rem; border: 1px solid var(--border-glass);">
                 Hello! I am your Echo Assistant. Ready to reconstruct.</div>
+        </div>
+
+        <div id="chat-history-view" class="hidden"
+            style="flex-grow: 1; padding: 1.5rem; overflow-y: auto; background: var(--bg-deep);">
+            <div class="text-center py-4 text-dim text-xs uppercase tracking-widest">Neural Log Archive</div>
+            <div id="history-content" class="space-y-4"></div>
         </div>
 
         <div class="chat-controls"
@@ -253,6 +272,20 @@
                 </button>
             </div>
         </div>
+    </div>
+
+    <!-- Hidden Media Inputs -->
+    <input type="file" id="chat-media-input" accept="image/*" hidden>
+    <input type="file" id="chat-camera-input" accept="image/*" capture="environment" hidden>
+    <input type="file" id="chat-voice-input" accept="audio/*" capture="microphone" hidden>
+
+    <!-- Visual Anchor Menu -->
+    <div id="visual-anchor-menu" class="hidden glass-panel"
+        style="position: fixed; bottom: 10rem; right: 6rem; z-index: 2200; padding: 1rem; display: flex; flex-direction: column; gap: 0.5rem; width: 180px;">
+        <button id="btn-gallery-sync" class="nav-link"
+            style="padding: 0.75rem; font-size: 0.8rem; justify-content: flex-start;">📁 Gallery Sync</button>
+        <button id="btn-camera-sync" class="nav-link"
+            style="padding: 0.75rem; font-size: 0.8rem; justify-content: flex-start;">📸 Instant Photo</button>
     </div>
 
     <!-- MODAL -->

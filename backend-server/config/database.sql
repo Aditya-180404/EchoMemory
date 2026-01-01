@@ -129,6 +129,21 @@ CREATE TABLE IF NOT EXISTS `rate_limits` (
   PRIMARY KEY (`ip_address`, `endpoint`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+-- Chat Messages Table (History Persistence)
+CREATE TABLE IF NOT EXISTS `chat_messages` (
+  `id` BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  `user_id` BIGINT UNSIGNED NOT NULL,
+  `role` ENUM('user', 'assistant') NOT NULL,
+  `content` TEXT NOT NULL,
+  `type` ENUM('text', 'image', 'audio', 'video') DEFAULT 'text',
+  `media_path` VARCHAR(512) DEFAULT NULL,
+  `is_edited` TINYINT(1) DEFAULT 0,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE,
+  INDEX (`user_id`),
+  INDEX (`created_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 -- Admins Table
 CREATE TABLE IF NOT EXISTS `admins` (
   `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,

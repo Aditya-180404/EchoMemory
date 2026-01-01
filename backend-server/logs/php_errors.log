@@ -6,3 +6,29 @@ Stack trace:
 #1 C:\xampp\htdocs\echomemory\backend-server\api\feedback.php(42): FeedbackController->handle()
 #2 {main}
   thrown in C:\xampp\htdocs\echomemory\backend-server\api\feedback.php on line 30
+[01-Jan-2026 15:57:51 Europe/Berlin] PHP Warning:  Undefined global variable $user_id in C:\xampp\htdocs\echomemory\backend-server\api\feedback.php on line 21
+[01-Jan-2026 15:57:51 Europe/Berlin] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'echomemory.feedback' doesn't exist in C:\xampp\htdocs\echomemory\backend-server\api\feedback.php:30
+Stack trace:
+#0 C:\xampp\htdocs\echomemory\backend-server\api\feedback.php(30): PDO->prepare('INSERT INTO fee...')
+#1 C:\xampp\htdocs\echomemory\backend-server\api\feedback.php(42): FeedbackController->handle()
+#2 {main}
+  thrown in C:\xampp\htdocs\echomemory\backend-server\api\feedback.php on line 30
+[01-Jan-2026 16:08:57 Europe/Berlin] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'echomemory.chat_messages' doesn't exist in C:\xampp\htdocs\echomemory\backend-server\api\history.php:30
+Stack trace:
+#0 C:\xampp\htdocs\echomemory\backend-server\api\history.php(30): PDO->prepare('SELECT role, co...')
+#1 C:\xampp\htdocs\echomemory\backend-server\api\history.php(39): HistoryController->handle()
+#2 {main}
+  thrown in C:\xampp\htdocs\echomemory\backend-server\api\history.php on line 30
+[01-Jan-2026 16:10:59 Europe/Berlin] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'echomemory.chat_messages' doesn't exist in C:\xampp\htdocs\echomemory\backend-server\api\chat.php:35
+Stack trace:
+#0 C:\xampp\htdocs\echomemory\backend-server\api\chat.php(35): PDO->prepare('INSERT INTO cha...')
+#1 C:\xampp\htdocs\echomemory\backend-server\api\chat.php(83): ChatController->handle()
+#2 {main}
+  thrown in C:\xampp\htdocs\echomemory\backend-server\api\chat.php on line 35
+[01-Jan-2026 16:13:18 Europe/Berlin] PHP Warning:  Undefined global variable $user_id in C:\xampp\htdocs\echomemory\backend-server\api\feedback.php on line 21
+[01-Jan-2026 16:13:18 Europe/Berlin] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'echomemory.feedback' doesn't exist in C:\xampp\htdocs\echomemory\backend-server\api\feedback.php:30
+Stack trace:
+#0 C:\xampp\htdocs\echomemory\backend-server\api\feedback.php(30): PDO->prepare('INSERT INTO fee...')
+#1 C:\xampp\htdocs\echomemory\backend-server\api\feedback.php(42): FeedbackController->handle()
+#2 {main}
+  thrown in C:\xampp\htdocs\echomemory\backend-server\api\feedback.php on line 30

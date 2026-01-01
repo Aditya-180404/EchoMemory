@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EchoMemory | Access Console</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+
+<body class="min-h-screen flex items-center justify-center p-6">
+    <div class="auth-card-elite glass-panel animate-fade-in">
+        <div class="text-center mb-8">
+            <h1 class="logo-vibrant mb-2">EchoMemory</h1>
+            <h2 class="text-3xl font-bold">Access Console</h2>
+            <p class="text-soft">Synchronize your cognitive cloud.</p>
+        </div>
+
+        <form id="auth-form" class="space-y-4">
+            <input type="email" id="email" placeholder="Email Address" required class="input-elite">
+            <input type="password" id="password" placeholder="Secure Password" required class="input-elite">
+            <button type="submit" id="auth-submit" class="btn-elite w-full">Unlock Console</button>
+            <p class="text-center mt-8 text-sm text-dim">
+                New Identity? <a href="register.html" class="text-primary-core font-bold">Register</a>
+            </p>
+            <p class="text-center mt-2 text-xs">
+                <a href="index.html" class="text-soft hover:text-white transition-opacity">Return to Home</a>
+            </p>
+        </form>
+    </div>
+    <script src="src/app.js" type="module"></script>
+</body>
+
+</html>

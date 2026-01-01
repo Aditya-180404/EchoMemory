@@ -45,8 +45,8 @@ function switchView(viewName) {
     const isShellView = shellViews.includes(viewName);
 
     const token = localStorage.getItem('em_token');
-    views.landing.classList.toggle('hidden', !!token);
-    views.shell.classList.toggle('hidden', !token);
+    if (views.landing) views.landing.classList.toggle('hidden', !!token);
+    if (views.shell) views.shell.classList.toggle('hidden', !token);
 
     // Inner Shell switch
     if (isShellView) {
@@ -54,19 +54,20 @@ function switchView(viewName) {
             if (views[v]) views[v].classList.toggle('hidden', v !== viewName);
         });
 
-        document.querySelectorAll('.side-nav .nav-link').forEach(link => {
+        document.querySelectorAll('.nav-link').forEach(link => {
             link.classList.toggle('active', link.dataset.view === viewName);
         });
-    }
 
-    if (viewName === 'profile') renderProfileData();
+        // Auto-close mobile nav on switch
+        document.getElementById('mobile-nav-panel')?.classList.add('hidden');
+
+        if (viewName === 'profile') renderProfileData();
+    }
 }
 
-// Global Scroll Helper
-window.scrollToAuth = (mode) => {
-    if (mode === 'register') toggleAuthMode(false); // Force register
-    else toggleAuthMode(true); // Force login
-    document.getElementById('auth-anchor').scrollIntoView({ behavior: 'smooth' });
+// Global Nav Helper
+window.goToPage = (page) => {
+    window.location.href = page;
 };
 
 // 2. Authentication Interaction
@@ -77,9 +78,9 @@ if (authForm) {
         const submitBtn = document.getElementById('auth-submit');
         const isLogin = submitBtn.textContent.includes('Unlock');
 
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
-        const fullName = document.getElementById('full_name').value;
+        const email = document.getElementById('email')?.value;
+        const password = document.getElementById('password')?.value;
+        const fullName = document.getElementById('full_name')?.value;
 
         try {
             const body = isLogin ? { email, password } : { email, password, full_name: fullName, language_code: currentLang };
@@ -94,10 +95,10 @@ if (authForm) {
                 if (isLogin) {
                     localStorage.setItem('em_token', result.data.token);
                     localStorage.setItem('em_user', JSON.stringify(result.data.user));
-                    initEliteSession();
+                    window.location.href = 'index.html';
                 } else {
                     alert("Identity Initialized. You may now unlock your console.");
-                    toggleAuthMode(true);
+                    window.location.href = 'login.html';
                 }
             } else {
                 alert(result.message);
@@ -108,28 +109,8 @@ if (authForm) {
     });
 }
 
-function toggleAuthMode(forceLogin) {
-    const title = document.getElementById('view-title');
-    const submit = document.getElementById('auth-submit');
-    const toggle = document.getElementById('toggle-auth');
-    const nameField = document.getElementById('name-field');
-
-    // If forceLogin is provided, use it; otherwise toggle
-    const shouldGoToLogin = typeof forceLogin === 'boolean' ? forceLogin : !submit.textContent.includes('Unlock');
-
-    title.textContent = shouldGoToLogin ? "Access Console" : "New Identity";
-    submit.textContent = shouldGoToLogin ? "Unlock Console" : "Initialize Identity";
-    toggle.textContent = shouldGoToLogin ? "New Identity? Register" : "Existing Identity? Login";
-    nameField.classList.toggle('hidden', shouldGoToLogin);
-}
-
-const toggleAuthBtn = document.getElementById('toggle-auth');
-if (toggleAuthBtn) {
-    toggleAuthBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        toggleAuthMode();
-    });
-}
+// Legacy Auth Toggles (Kept for compatibility if partially loaded)
+function toggleAuthMode() { }
 
 // 3. Authenticated Session Logic
 function initEliteSession() {
@@ -152,29 +133,75 @@ if (chatBubble && chatWindow) {
             setTimeout(() => chatBubble.classList.add('hidden'), 300);
         }
     });
-} else {
-    console.error("Chatbot elements missing from DOM");
+
+    if (chatClose) {
+        chatClose.addEventListener('click', () => {
+            chatWindow.classList.add('hidden');
+            chatBubble.classList.remove('hidden');
+            setTimeout(() => chatBubble.style.opacity = '1', 10);
+        });
+    }
 }
 
-if (chatClose && chatWindow && chatBubble) {
-    chatClose.addEventListener('click', () => {
-        chatWindow.classList.add('hidden');
-        chatBubble.classList.remove('hidden');
-        setTimeout(() => chatBubble.style.opacity = '1', 10);
-    });
-}
-
-// Chatbot Transmission logic
+// 2. Neural Assistant Persistence & Revision
 const chatSend = document.getElementById('chat-send');
 const chatInput = document.getElementById('chat-input');
 const chatMessages = document.getElementById('chat-messages');
+
+let lastUserMessageId = null;
+let chatHistory = [];
+
+async function fetchHistory() {
+    const token = localStorage.getItem('em_token');
+    if (!token) return;
+    try {
+        const response = await fetch(API_BASE + '/history.php', {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const result = await response.json();
+        if (result.status === 'success') {
+            chatHistory = result.data;
+            renderHistory();
+        }
+    } catch (err) { console.error("History retrieval failed:", err); }
+}
+
+function renderHistory() {
+    const historyContent = document.getElementById('history-content');
+    if (!historyContent) return;
+
+    historyContent.innerHTML = chatHistory.map(msg => `
+        <div class="message ${msg.role}" style="${msg.role === 'user' ? 'background: var(--primary-core); color: white; padding: 1rem; border-radius: 1.25rem 1.25rem 0.25rem 1.25rem; align-self: flex-end; margin-top: 1rem; border: 1px solid rgba(255,255,255,0.1);' : 'background: var(--bg-deep); color: var(--text-vibrant); padding: 1rem; border-radius: 1.25rem 1.25rem 1.25rem 0.25rem; margin-top: 1rem; border: 1px solid var(--border-glass);'}">
+            ${msg.content}
+            ${msg.is_edited ? '<span class="text-[0.5rem] opacity-50 block mt-1">Edited</span>' : ''}
+        </div>
+    `).join('');
+}
+
+function toggleHistory() {
+    const msgView = document.getElementById('chat-messages');
+    const histView = document.getElementById('chat-history-view');
+    const isShowingHistory = !histView.classList.contains('hidden');
+
+    msgView.classList.toggle('hidden', !isShowingHistory);
+    histView.classList.toggle('hidden', isShowingHistory);
+
+    if (!isShowingHistory) fetchHistory();
+}
+
+document.getElementById('toggle-history')?.addEventListener('click', toggleHistory);
 
 async function sendChatMessage() {
     const text = chatInput.value.trim();
     if (!text) return;
 
-    // Append User Message
-    chatMessages.innerHTML += `<div class="message user" style="background: var(--primary-core); color: white; padding: 1rem; border-radius: 1.25rem 1.25rem 0.25rem 1.25rem; align-self: flex-end; margin-top: 1rem; border: 1px solid rgba(255,255,255,0.1);">${text}</div>`;
+    // Append User Message UI
+    const msgHtml = `<div class="message user" style="background: var(--primary-core); color: white; padding: 1rem; border-radius: 1.25rem 1.25rem 0.25rem 1.25rem; align-self: flex-end; margin-top: 1rem; border: 1px solid rgba(255,255,255,0.1); position: relative;">
+        <span class="msg-text">${text}</span>
+        <button class="edit-msg-btn" onclick="editLastMessage(this)" style="position: absolute; top: -10px; right: -10px; background: var(--bg-surface); border-radius: 50%; width: 20px; height: 20px; font-size: 0.6rem; border: 1px solid var(--border-glass); display: flex; items-center; justify-center; cursor: pointer;">✎</button>
+    </div>`;
+
+    chatMessages.innerHTML += msgHtml;
     chatInput.value = '';
     chatMessages.scrollTop = chatMessages.scrollHeight;
 
@@ -189,27 +216,146 @@ async function sendChatMessage() {
         });
         const result = await response.json();
 
-        // Append Bot Message
-        chatMessages.innerHTML += `<div class="message bot" style="background: var(--bg-deep); color: var(--text-vibrant); padding: 1rem; border-radius: 1.25rem 1.25rem 1.25rem 0.25rem; margin-top: 1rem; border: 1px solid var(--border-glass);">${result.response || result.message}</div>`;
+        // Append Bot Message UI
+        chatMessages.innerHTML += `<div class="message bot" style="background: var(--bg-deep); color: var(--text-vibrant); padding: 1rem; border-radius: 1.25rem 1.25rem 1.25rem 0.25rem; margin-top: 1rem; border: 1px solid var(--border-glass);">${result.data.reply}</div>`;
         chatMessages.scrollTop = chatMessages.scrollHeight;
     } catch (err) {
         chatMessages.innerHTML += `<div class="message sys" style="color: var(--danger-core); font-size: 0.75rem; margin-top: 1rem;">Neural link error. Reconstruction failed.</div>`;
     }
 }
 
+window.editLastMessage = (btn) => {
+    const msgDiv = btn.parentElement;
+    const textSpan = msgDiv.querySelector('.msg-text');
+    const oldText = textSpan.textContent;
+
+    const newInput = document.createElement('input');
+    newInput.type = 'text';
+    newInput.value = oldText;
+    newInput.className = 'input-elite';
+    newInput.style.marginBottom = '0';
+    newInput.style.fontSize = '0.9rem';
+
+    newInput.onblur = () => {
+        textSpan.textContent = newInput.value;
+        msgDiv.removeChild(newInput);
+        textSpan.style.display = 'inline';
+        // In a full implementation, this would trigger an UPDATE API call
+        console.log("Message updated in local view");
+    };
+
+    newInput.onkeydown = (e) => { if (e.key === 'Enter') newInput.blur(); };
+
+    textSpan.style.display = 'none';
+    msgDiv.insertBefore(newInput, textSpan);
+    newInput.focus();
+};
+
 chatSend?.addEventListener('click', sendChatMessage);
 chatInput?.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') sendChatMessage();
 });
 
-// Mic & Camera Placeholders
-document.getElementById('chat-mic')?.addEventListener('click', () => {
-    alert("Voice Neural Sync initialized. (Microphone access pending)");
+// Chatbot Media Features (Voice & Vision)
+let mediaRecorder;
+let audioChunks = [];
+let isRecording = false;
+
+const chatMicBtn = document.getElementById('chat-mic');
+const chatCameraBtn = document.getElementById('chat-camera');
+const chatImageInput = document.getElementById('chat-media-input');
+const chatCameraInput = document.getElementById('chat-camera-input');
+const visualMenu = document.getElementById('visual-anchor-menu');
+
+// 1. Visual Anchor Logic
+chatCameraBtn?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    visualMenu?.classList.toggle('hidden');
 });
 
-document.getElementById('chat-camera')?.addEventListener('click', () => {
-    alert("Visual Neural Anchor initialized. (Camera access pending)");
+// Close menu on click outside
+document.addEventListener('click', () => visualMenu?.classList.add('hidden'));
+
+document.getElementById('btn-gallery-sync')?.addEventListener('click', () => {
+    chatImageInput?.click();
+    visualMenu?.classList.add('hidden');
 });
+
+document.getElementById('btn-camera-sync')?.addEventListener('click', () => {
+    chatCameraInput?.click();
+    visualMenu?.classList.add('hidden');
+});
+
+const handleImageCapture = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Preview in Chat
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+        chatMessages.innerHTML += `<div class="message user" style="align-self: flex-end; margin-top: 1rem;"><img src="${ev.target.result}" class="chat-media-preview"></div>`;
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    };
+    reader.readAsDataURL(file);
+
+    await uploadChatMedia(file, 'image');
+};
+
+chatImageInput?.addEventListener('change', handleImageCapture);
+chatCameraInput?.addEventListener('change', handleImageCapture);
+
+// 2. Voice Neural Sync Logic
+chatMicBtn?.addEventListener('click', async () => {
+    if (!isRecording) {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            mediaRecorder = new MediaRecorder(stream);
+            audioChunks = [];
+
+            mediaRecorder.ondataavailable = (event) => audioChunks.push(event.data);
+
+            mediaRecorder.onstop = async () => {
+                const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                const audioFile = new File([audioBlob], "voice_fragment.webm", { type: 'audio/webm' });
+
+                chatMessages.innerHTML += `<div class="message user" style="align-self: flex-end; margin-top: 1rem;"><div class="glass-panel p-3 text-xs">🎙️ Voice Fragment Transmitted</div></div>`;
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+
+                await uploadChatMedia(audioFile, 'audio');
+
+                // Stop all tracks
+                stream.getTracks().forEach(track => track.stop());
+            };
+
+            mediaRecorder.start();
+            isRecording = true;
+            chatMicBtn.classList.add('recording');
+        } catch (err) { alert("Microphone access denied."); }
+    } else {
+        mediaRecorder.stop();
+        isRecording = false;
+        chatMicBtn.classList.remove('recording');
+    }
+});
+
+async function uploadChatMedia(file, type) {
+    const formData = new FormData();
+    formData.append('media', file);
+    formData.append('type', type);
+
+    try {
+        const response = await fetch(API_BASE + '/upload.php', {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${localStorage.getItem('em_token')}` },
+            body: formData
+        });
+        const result = await response.json();
+        if (result.status === 'success') {
+            // After upload, we could trigger a special chat command or just acknowledge
+            console.log("Media synthesized:", result.data.file_path);
+        }
+    } catch (err) { console.error("Synthesis failed:", err); }
+}
 
 // Footer Feedback Logic
 const footerRatingPills = document.querySelectorAll('.shell-footer .rating-pill');
@@ -289,7 +435,7 @@ if (feedbackForm) {
         e.preventDefault();
         if (!selectedRating) return alert("Select a rating first.");
 
-        const comment = document.getElementById('feedback-comment').value;
+        const comment = document.getElementById('feedback-comment')?.value;
         const token = localStorage.getItem('em_token');
 
         try {
@@ -315,10 +461,17 @@ if (feedbackForm) {
 }
 
 // Navigation Events for Shell
-document.querySelectorAll('.side-nav .nav-link').forEach(link => {
+document.querySelectorAll('.nav-link').forEach(link => {
     if (link.dataset.view) {
         link.addEventListener('click', () => switchView(link.dataset.view));
     }
+});
+
+// Hamburger Toggle
+const hamburger = document.getElementById('hamburger-trigger');
+const mobileNav = document.getElementById('mobile-nav-panel');
+hamburger?.addEventListener('click', () => {
+    mobileNav?.classList.toggle('hidden');
 });
 
 // 5. Memory Stream
@@ -376,19 +529,29 @@ function closeModal() {
     document.getElementById('modal-container').classList.add('hidden');
 }
 window.closeModal = closeModal;
-document.getElementById('close-modal').addEventListener('click', closeModal);
+document.getElementById('close-modal')?.addEventListener('click', closeModal);
 
 // 6. Init
-if (localStorage.getItem('em_token')) {
-    initEliteSession();
+const isAuthPage = window.location.pathname.includes('login.html') || window.location.pathname.includes('register.html');
+const hasToken = !!localStorage.getItem('em_token');
+
+if (hasToken) {
+    if (isAuthPage) {
+        window.location.href = 'index.html';
+    } else if (views.shell) {
+        initEliteSession();
+    }
 } else {
-    switchView('landing');
+    if (!isAuthPage && views.landing) {
+        switchView('landing');
+    }
 }
 
-const logoutBtn = document.getElementById('logout-btn');
-if (logoutBtn) {
-    logoutBtn.addEventListener('click', () => {
-        localStorage.clear();
-        location.reload();
-    });
-}
+const handleLogout = () => {
+    localStorage.clear();
+    location.reload();
+};
+
+document.getElementById('logout-btn-top')?.addEventListener('click', handleLogout);
+document.getElementById('logout-btn-mobile')?.addEventListener('click', handleLogout);
+document.getElementById('logout-btn')?.addEventListener('click', handleLogout); // Backward compat

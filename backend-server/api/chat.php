@@ -19,23 +19,34 @@ class ChatController extends ApiController {
 
         $input = $this->getJsonInput();
         $message = $input['message'] ?? '';
-        $userId = $GLOBALS['user_id'];
-
-        if (empty($message)) {
-            $this->errorResponse("Message is required.");
-        }
-
         // 1. Fetch relevant user context (Recent memories)
         $pdo = getDBConnection();
+        $userPayload = $GLOBALS['user_payload'];
+        $userId = $userPayload['uid']; // This is actually the 'uid' string based on ApiController usage
+
+        // Resolve internal user ID from UID
+        $userStmt = $pdo->prepare("SELECT id FROM users WHERE uid = ?");
+        $userStmt->execute([$userId]);
+        $internalId = $userStmt->fetchColumn();
+
+        if (!$internalId) $this->errorResponse("User context invalid.");
+
+        // Store User Message
+        $persistStmt = $pdo->prepare("INSERT INTO chat_messages (user_id, role, content) VALUES (?, 'user', ?)");
+        $persistStmt->execute([$internalId, $message]);
+
         $stmt = $pdo->prepare("SELECT narrative_text FROM memories WHERE user_id = ? AND narrative_text IS NOT NULL ORDER BY created_at DESC LIMIT 5");
-        $stmt->execute([$userId]);
+        $stmt->execute([$internalId]);
         $memories = $stmt->fetchAll(PDO::FETCH_COLUMN);
         
         $context = implode("\n", $memories);
 
-        // 2. Call Azure OpenAI (Simulation for now or direct if using PHP OpenAI client)
-        // In production, you would use a cURL request to your Azure OpenAI endpoint
+        // 2. Call Azure OpenAI
         $reply = $this->getAzureOpenAIResponse($message, $context);
+
+        // Store Assistant Message
+        $persistStmt = $pdo->prepare("INSERT INTO chat_messages (user_id, role, content) VALUES (?, 'assistant', ?)");
+        $persistStmt->execute([$internalId, $reply]);
 
         $this->successResponse("Success", ['reply' => $reply]);
     }

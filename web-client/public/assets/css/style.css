@@ -124,57 +124,82 @@ body {
 
 /* Navigation Shell */
 .app-shell {
-    display: grid;
-    grid-template-columns: 280px 1fr;
+    display: flex;
+    flex-direction: column;
     min-height: 100vh;
 }
 
-.side-nav {
-    padding: 2.5rem 1.5rem;
-    border-right: 1px solid var(--border-glass);
-    background: var(--bg-glass);
-    backdrop-filter: blur(20px);
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
+.top-navbar {
+    height: 80px;
+    width: 100%;
     position: sticky;
     top: 0;
+    z-index: 2500;
+    border-bottom: 1px solid var(--border-glass);
+    border-radius: 0;
+    background: var(--bg-glass);
+    backdrop-filter: blur(20px);
 }
 
-.side-nav .nav-link {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    padding: 1rem 1.25rem;
-    margin-bottom: 0.5rem;
-    border-radius: 1.25rem;
+.top-navbar .nav-link {
+    padding: 0.5rem 1rem;
     color: var(--text-soft);
-    text-decoration: none;
-    transition: all 0.3s ease;
     font-weight: 500;
-    width: 100%;
+    transition: all 0.3s ease;
     border: none;
     background: transparent;
     cursor: pointer;
 }
 
-.side-nav .nav-link:hover,
-.side-nav .nav-link.active {
-    background: var(--primary-core);
-    color: white;
-    transform: translateX(5px);
+.top-navbar .nav-link:hover,
+.top-navbar .nav-link.active {
+    color: var(--primary-core);
 }
 
-.logo-vibrant {
-    font-size: 1.5rem;
-    font-weight: 800;
-    letter-spacing: -0.04em;
-    background: linear-gradient(135deg, var(--text-vibrant) 0%, var(--primary-core) 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    margin-bottom: 3rem;
+.desktop-nav-links {
+    display: flex;
 }
+
+.mobile-only {
+    display: none;
+}
+
+.mobile-nav-panel {
+    position: fixed;
+    top: 80px;
+    left: 0;
+    width: 100%;
+    z-index: 2400;
+    border-radius: 0 0 2rem 2rem;
+    animation: slideDown 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes slideDown {
+    from {
+        transform: translateY(-100%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.mobile-nav-panel .nav-link {
+    width: 100%;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    border: none;
+    background: transparent;
+    color: var(--text-vibrant);
+    font-size: 1.1rem;
+}
+
+/* Sidebar styles removed */
 
 /* Header & Content Alignment */
 .content-main {
@@ -460,18 +485,124 @@ header {
         text-align: center;
     }
 }
+
 /* Final Layout & Theme Fixes */
-.hero-kinetic { position: relative; padding: 10rem 0; text-align: center; overflow: hidden; }
-.hero-title { font-size: 6rem; font-weight: 900; line-height: 1; margin-bottom: 2rem; background: linear-gradient(to bottom, #fff, #6366f1); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
-.hero-subtitle { font-size: 1.5rem; color: var(--text-soft); max-width: 800px; margin: 0 auto 3rem; }
-.landing-view { display: block; }
-@media (max-width: 1024px) {
-    .app-shell { grid-template-columns: 1fr; }
-    .side-nav { position: fixed; bottom: 0; left: 0; width: 100%; height: 70px; flex-direction: row; padding: 0 1rem; align-items: center; justify-content: space-around; border-right: none; border-top: 1px solid var(--border-glass); z-index: 2000; }
-    .side-nav .nav-link { flex-direction: column; gap: 0.25rem; padding: 0.5rem; margin-bottom: 0; font-size: 0.7rem; width: auto; }
-    .side-nav .logo-vibrant, .side-nav #logout-btn { display: none; }
-    .content-main { padding: 2rem; padding-bottom: 100px; }
-    header { flex-direction: column; align-items: flex-start; gap: 1.5rem; }
-    .hero-title { font-size: 3rem; }
+.hero-kinetic {
+    position: relative;
+    padding: 10rem 0;
+    text-align: center;
+    overflow: hidden;
 }
-.theme-toggle { position: fixed; top: 1.5rem; right: 2rem; z-index: 2100; background: var(--bg-glass); border: 1px solid var(--border-glass); color: var(--text-vibrant); width: 45px; height: 45px; border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
+
+.hero-title {
+    font-size: 6rem;
+    font-weight: 900;
+    line-height: 1;
+    margin-bottom: 2rem;
+    background: linear-gradient(to bottom, #fff, #6366f1);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.hero-subtitle {
+    font-size: 1.5rem;
+    color: var(--text-soft);
+    max-width: 800px;
+    margin: 0 auto 3rem;
+}
+
+.landing-view {
+    display: block;
+}
+
+@media (max-width: 1024px) {
+    .desktop-nav-links {
+        display: none;
+    }
+
+    .mobile-only {
+        display: flex;
+    }
+
+    .content-main {
+        padding: 1.5rem;
+    }
+
+    .hero-title {
+        font-size: 2.5rem;
+    }
+}
+
+.theme-toggle {
+    position: fixed;
+    top: 1.5rem;
+    right: 2rem;
+    z-index: 2100;
+    background: var(--bg-glass);
+    border: 1px solid var(--border-glass);
+    color: var(--text-vibrant);
+    width: 45px;
+    height: 45px;
+    border-radius: 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(10px);
+}
+
+/* Recording State */
+.control-btn.recording {
+    background: var(--danger-core) !important;
+    color: white !important;
+    animation: recordingPulse 1.5s infinite;
+}
+
+@keyframes recordingPulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(244, 63, 94, 0.4);
+    }
+
+    70% {
+        box-shadow: 0 0 0 10px rgba(244, 63, 94, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(244, 63, 94, 0);
+    }
+}
+
+.chat-media-preview {
+    width: 100%;
+    border-radius: 1rem;
+    margin-top: 0.5rem;
+    border: 1px solid var(--border-glass);
+}
+
+/* Advanced Chatbot UI */
+.edit-msg-btn:hover {
+    background: var(--primary-core) !important;
+    color: white !important;
+    transform: scale(1.2);
+}
+
+#chat-history-view {
+    scroll-behavior: smooth;
+    border-top: 1px solid var(--border-glass);
+}
+
+.message.assistant {
+    border-left: 3px solid var(--secondary-core);
+}
+
+.msg-text:empty::before {
+    content: 'Synchronizing...';
+    opacity: 0.5;
+    font-style: italic;
+}
+
+#toggle-history.active {
+    color: var(--secondary-core);
+    filter: drop-shadow(0 0 5px var(--secondary-core));
+}
