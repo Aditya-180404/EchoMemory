@@ -32,3 +32,10 @@ Stack trace:
 #1 C:\xampp\htdocs\echomemory\backend-server\api\feedback.php(42): FeedbackController->handle()
 #2 {main}
   thrown in C:\xampp\htdocs\echomemory\backend-server\api\feedback.php on line 30
+[01-Jan-2026 16:29:59 Europe/Berlin] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'echomemory.chat_messages' doesn't exist in C:\xampp\htdocs\echomemory\backend-server\api\history.php:30
+Stack trace:
+#0 C:\xampp\htdocs\echomemory\backend-server\api\history.php(30): PDO->prepare('SELECT role, co...')
+#1 C:\xampp\htdocs\echomemory\backend-server\api\history.php(39): HistoryController->handle()
+#2 {main}
+  thrown in C:\xampp\htdocs\echomemory\backend-server\api\history.php on line 30
+[01-Jan-2026 16:35:28 Europe/Berlin] PHP Deprecated:  round(): Passing null to parameter #1 ($num) of type int|float is deprecated in C:\xampp\htdocs\echomemory\backend-server\api\admin\stats.php on line 48

@@ -154,4 +154,9 @@ CREATE TABLE IF NOT EXISTS `admins` (
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+-- Initial Administrative Account 
+-- Username: admin | Password: admin123 (Argon2id)
+INSERT IGNORE INTO `admins` (`username`, `password_hash`, `role`) 
+VALUES ('admin', '$argon2id$v=19$m=65536,t=4,p=2$UTFjVnN0TEJIM1BOZmMwZg$EqzTZIag1YUxpRkoxhSJghryzbAUVqnZUE5xP26vJHE', 'superadmin');
+
 COMMIT;
