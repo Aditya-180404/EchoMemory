@@ -14,12 +14,21 @@ class ProfileController extends ApiController {
 
     public function handle() {
         if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+            $userUid = $GLOBALS['user_payload']['uid'];
+            $pdo = getDBConnection();
+            $stmt = $pdo->prepare("SELECT full_name, email FROM users WHERE uid = ?");
+            $stmt->execute([$userUid]);
+            $user = $stmt->fetch();
+
+            if (!$user) {
+                $this->errorResponse("User not found.", 404);
+            }
+
             $this->successResponse("Profile retrieved.", [
                 'user' => [
-                    'uid' => $this->user['uid'],
-                    'full_name' => $this->user['name'], // Using name from token if available
-                    'email' => $this->user['email'],
-                    'lang' => $this->user['lang']
+                    'uid' => $userUid,
+                    'full_name' => $user['full_name'],
+                    'email' => $user['email']
                 ]
             ]);
         }

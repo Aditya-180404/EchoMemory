@@ -145,17 +145,17 @@ async function fetchProfileData() {
     const token = localStorage.getItem('em_token');
     if (!token) return;
     try {
-        const response = await fetch(API_BASE + '/settings.php', {
+        const response = await fetch(API_BASE + '/profile.php', {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         const result = await response.json();
         if (result.status === 'success') {
-            // Also update localStorage with latest user info if available
-            // Note: settings.php might need to return user object as well, but for now we'll rely on it to ensure connection.
-            // Let's assume settings.php or a new GET /profile.php exists.
-            // Since I created POST /profile.php, I should add GET support or use a fetch.
+            localStorage.setItem('em_user', JSON.stringify(result.data.user));
+            if (views.shell && !views.shell.classList.contains('hidden')) {
+                renderProfileData();
+            }
         }
-    } catch (err) { }
+    } catch (err) { console.error("Profile sync failed"); }
 }
 
 // Chatbot Activation Logic
@@ -434,20 +434,46 @@ function renderProfileData() {
     const container = document.getElementById('profile-container');
     if (!user || !container) return;
 
+    // Premium Identity Card Redesign
     container.innerHTML = `
         <div id="profile-display" class="fade-in">
-            <div class="flex items-center gap-12 mb-20 bg-white/5 p-12 rounded-[4rem] border-2 border-border-glass">
-                <div class="w-48 h-48 bg-indigo-500/10 border-4 border-primary-core/20 rounded-[3rem] flex items-center justify-center text-7xl font-black text-primary-core shadow-2xl">
-                    ${(user.full_name || user.name || 'U')[0].toUpperCase()}
-                </div>
-                <div>
-                    <h3 class="text-6xl font-black mb-4 tracking-tight">${user.full_name || user.name || 'Memory Explorer'}</h3>
-                    <p class="text-soft text-3xl opacity-60">${user.email || 'Cloud Identity Verified'}</p>
-                    <button class="mt-8 text-primary-core font-bold text-2xl hover:underline" onclick="toggleProfileEdit(true)">✏️ Edit Identity</button>
+            <div class="profile-card-elite glass-panel mb-12 p-12 rounded-3xl overflow-hidden relative" style="border-radius: 4rem;">
+                <!-- Background Decorative Glow -->
+                <div class="absolute top-[-20%] left-[-10%] w-[300px] h-[300px] rounded-full blur-[100px]" style="background: var(--primary-core); opacity: 0.1;"></div>
+                
+                <div class="flex items-center gap-16 relative z-10">
+                    <!-- Avatar with Holographic Effect -->
+                    <div class="avatar-elite relative">
+                        <div class="w-56 h-56 rounded-[3.5rem] flex items-center justify-center text-7xl font-black text-white shadow-2xl" style="background: linear-gradient(135deg, var(--primary-core), var(--secondary-core)); border: 4px solid rgba(255,255,255,0.15); width: 180px; height: 180px; font-size: 5rem;">
+                            ${(user.full_name || user.name || 'E')[0].toUpperCase()}
+                        </div>
+                        <div class="absolute -bottom-2 -right-2 w-12 h-12 bg-accent-core rounded-full border-4 border-bg-surface flex items-center justify-center text-xs shadow-xl" title="Neural Link Active">
+                            ⚡
+                        </div>
+                        <div class="avatar-glow"></div>
+                    </div>
+
+                    <div class="flex-grow">
+                        <div class="flex items-center gap-6 mb-4">
+                            <h3 class="text-6xl font-black tracking-tighter text-white" style="margin-bottom: 0;">${user.full_name || user.name || 'Memory Explorer'}</h3>
+                            <span class="px-6 py-2 rounded-full text-sm font-bold tracking-widest uppercase" style="background: rgba(99, 102, 241, 0.1); border: 1px solid rgba(99, 102, 241, 0.3); color: var(--primary-core); font-size: 0.7rem;">Verified Persona</span>
+                        </div>
+                        <p class="text-soft text-3xl opacity-70 mb-8 font-medium">${user.email || 'Cloud Identity Verified'}</p>
+                        
+                        <div class="flex gap-6 mt-8">
+                            <button class="btn-elite px-10 py-5 text-xl" onclick="toggleProfileEdit(true)" style="padding: 1rem 2rem; font-size: 1.1rem; border-radius: 1.25rem;">
+                                ✏️ Update Identity
+                            </button>
+                            <button class="nav-link border border-border-glass px-8 py-5 rounded-2xl text-lg opacity-60 hover:opacity-100 transition-opacity" style="border: 1px solid var(--border-glass); padding: 1rem 2rem; border-radius: 1.25rem;">
+                                📊 Identity Audit
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <div class="grid gap-8">
+            <!-- Stats Grid (Existing cards with refined text) -->
+            <div class="grid md:grid-cols-2 gap-10">
                 <div class="settings-item">
                     <div class="settings-info">
                         <div class="settings-icon-wrapper">🛡️</div>
@@ -456,7 +482,7 @@ function renderProfileData() {
                             <p class="text-soft text-xl">Identity link is verified and active.</p>
                         </div>
                     </div>
-                    <span class="text-emerald-400 font-black text-2xl">VERIFIED</span>
+                    <span class="text-emerald-400 font-black text-2xl uppercase tracking-widest">Active</span>
                 </div>
 
                 <div class="settings-item">
@@ -473,7 +499,7 @@ function renderProfileData() {
         </div>
 
         <div id="profile-edit" class="hidden fade-in-up">
-            <div class="max-w-3xl glass-panel p-16">
+            <div class="max-w-3xl glass-panel p-16" style="padding: 4rem; border-radius: 3rem;">
                 <h3 class="text-5xl font-black mb-12 tracking-tight">Update Identity</h3>
                 <form id="profile-update-form" class="space-y-8">
                     <div>
@@ -485,8 +511,8 @@ function renderProfileData() {
                         <input type="email" id="edit-email" value="${user.email || ''}" class="input-elite text-3xl p-8" required>
                     </div>
                     <div class="flex gap-6 mt-12">
-                        <button type="submit" class="btn-elite px-12 py-6 text-2xl">Save Changes</button>
-                        <button type="button" class="nav-link border-2 border-border-glass px-10 py-6 text-xl rounded-2xl" onclick="toggleProfileEdit(false)">Cancel</button>
+                        <button type="submit" class="btn-elite px-12 py-6 text-2xl" style="padding: 1.5rem 3rem;">Save Changes</button>
+                        <button type="button" class="nav-link border-2 border-border-glass px-10 py-6 text-xl rounded-2xl" onclick="toggleProfileEdit(false)" style="border: 1px solid var(--border-glass); padding: 1.5rem 3rem; border-radius: 1.5rem;">Cancel</button>
                     </div>
                 </form>
             </div>
