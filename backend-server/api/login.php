@@ -60,7 +60,8 @@ class LoginController extends ApiController {
             'token' => $token,
             'user' => [
                 'uid' => $user['uid'],
-                'name' => $user['full_name'],
+                'full_name' => $user['full_name'],
+                'email' => $email,
                 'lang' => $user['language_code']
             ]
         ]);

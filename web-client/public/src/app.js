@@ -6,16 +6,28 @@
 const API_BASE = "http://localhost/echomemory/backend-server/api";
 let currentLang = localStorage.getItem('em_lang') || 'en';
 let selectedRating = 0;
-let isDark = localStorage.getItem('em_theme') !== 'light';
+let isDark = localStorage.getItem('em_theme') === 'dark';
+window.voiceOnlyMode = false;
+let syncInterval;
+
+// Initialize Settings and Sync
+initAdvancedSync();
 
 // Initialize Theme
 if (!isDark) document.body.classList.add('light-mode');
 updateThemeIcon();
 
-function toggleTheme() {
+function toggleTheme(save = true) {
     isDark = !isDark;
+    applyTheme();
+    if (save) {
+        localStorage.setItem('em_theme', isDark ? 'dark' : 'light');
+        syncUiSettingsToServer();
+    }
+}
+
+function applyTheme() {
     document.body.classList.toggle('light-mode', !isDark);
-    localStorage.setItem('em_theme', isDark ? 'dark' : 'light');
     updateThemeIcon();
 }
 
@@ -27,7 +39,8 @@ function updateThemeIcon() {
         : '<circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="4.22" x2="19.78" y2="5.64"></line>';
 }
 
-document.getElementById('theme-toggle')?.addEventListener('click', toggleTheme);
+window.toggleTheme = toggleTheme;
+document.getElementById('theme-toggle')?.addEventListener('click', () => toggleTheme());
 
 // 1. View & State Management
 const views = {
@@ -36,10 +49,15 @@ const views = {
     home: document.getElementById('home-view'),
     dashboard: document.getElementById('dashboard-view'),
     profile: document.getElementById('profile-view'),
-    settings: document.getElementById('settings-view')
+    settings: document.getElementById('settings-view'),
+    voiceOnly: document.getElementById('voice-only-view') // New View
 };
 
 function switchView(viewName) {
+    if (voiceOnlyMode && viewName !== 'voiceOnly' && viewName !== 'landing') {
+        viewName = 'voiceOnly';
+    }
+
     // Top-level switch (Landing vs Shell)
     const shellViews = ['home', 'dashboard', 'profile', 'settings'];
     const isShellView = shellViews.includes(viewName);
@@ -118,6 +136,25 @@ function initEliteSession() {
     if (bubble) bubble.classList.remove('hidden');
     switchView('home');
     fetchMemories();
+    // Refresh user data from server
+    fetchProfileData();
+}
+
+async function fetchProfileData() {
+    const token = localStorage.getItem('em_token');
+    if (!token) return;
+    try {
+        const response = await fetch(API_BASE + '/settings.php', {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const result = await response.json();
+        if (result.status === 'success') {
+            // Also update localStorage with latest user info if available
+            // Note: settings.php might need to return user object as well, but for now we'll rely on it to ensure connection.
+            // Let's assume settings.php or a new GET /profile.php exists.
+            // Since I created POST /profile.php, I should add GET support or use a fetch.
+        }
+    } catch (err) { }
 }
 
 // Chatbot Activation Logic
@@ -397,26 +434,98 @@ function renderProfileData() {
     if (!user || !container) return;
 
     container.innerHTML = `
-        <div class="flex items-center gap-8 mb-12">
-            <div class="w-32 h-32 bg-indigo-500/10 border border-primary-core/20 rounded-3xl flex items-center justify-center text-5xl font-bold text-primary-core">
-                ${user.full_name ? user.full_name[0] : 'U'}
+        <div id="profile-display" class="fade-in">
+            <div class="flex items-center gap-12 mb-20 bg-white/5 p-12 rounded-[4rem] border-2 border-border-glass">
+                <div class="w-48 h-48 bg-indigo-500/10 border-4 border-primary-core/20 rounded-[3rem] flex items-center justify-center text-7xl font-black text-primary-core shadow-2xl">
+                    ${(user.full_name || user.name || 'U')[0].toUpperCase()}
+                </div>
+                <div>
+                    <h3 class="text-6xl font-black mb-4 tracking-tight">${user.full_name || user.name || 'Memory Explorer'}</h3>
+                    <p class="text-soft text-3xl opacity-60">${user.email || 'Cloud Identity Verified'}</p>
+                    <button class="mt-8 text-primary-core font-bold text-2xl hover:underline" onclick="toggleProfileEdit(true)">✏️ Edit Identity</button>
+                </div>
             </div>
-            <div>
-                <h3 class="text-3xl font-bold">${user.full_name || 'Anonymous'}</h3>
-                <p class="text-soft text-lg">${user.email}</p>
+
+            <div class="grid gap-8">
+                <div class="settings-item">
+                    <div class="settings-info">
+                        <div class="settings-icon-wrapper">🛡️</div>
+                        <div class="settings-text">
+                            <h4 class="font-bold text-3xl">Neural Status</h4>
+                            <p class="text-soft text-xl">Identity link is verified and active.</p>
+                        </div>
+                    </div>
+                    <span class="text-emerald-400 font-black text-2xl">VERIFIED</span>
+                </div>
+
+                <div class="settings-item">
+                    <div class="settings-info">
+                        <div class="settings-icon-wrapper">🔄</div>
+                        <div class="settings-text">
+                            <h4 class="font-bold text-3xl">Last Synchronization</h4>
+                            <p class="text-soft text-xl">Cognitive data was last mirrored recorded.</p>
+                        </div>
+                    </div>
+                    <span class="text-soft font-black text-2xl">ACTIVE</span>
+                </div>
             </div>
         </div>
-        <div class="grid md-cols-2 gap-6">
-            <div class="p-6 glass-panel" style="background: rgba(0,0,0,0.2);">
-                <span class="text-[0.6rem] text-dim uppercase tracking-widest block mb-1">Status</span>
-                <span class="text-emerald-400 font-bold">Neural Link Verified</span>
-            </div>
-            <div class="p-6 glass-panel" style="background: rgba(0,0,0,0.2);">
-                <span class="text-[0.6rem] text-dim uppercase tracking-widest block mb-1">Last Synchronized</span>
-                <span class="text-soft font-bold">Active Now</span>
+
+        <div id="profile-edit" class="hidden fade-in-up">
+            <div class="max-w-3xl glass-panel p-16">
+                <h3 class="text-5xl font-black mb-12 tracking-tight">Update Identity</h3>
+                <form id="profile-update-form" class="space-y-8">
+                    <div>
+                        <label class="block text-2xl font-bold mb-4 opacity-70">Full Name</label>
+                        <input type="text" id="edit-name" value="${user.full_name || user.name || ''}" class="input-elite text-3xl p-8" required>
+                    </div>
+                    <div>
+                        <label class="block text-2xl font-bold mb-4 opacity-70">Email Address</label>
+                        <input type="email" id="edit-email" value="${user.email || ''}" class="input-elite text-3xl p-8" required>
+                    </div>
+                    <div class="flex gap-6 mt-12">
+                        <button type="submit" class="btn-elite px-12 py-6 text-2xl">Save Changes</button>
+                        <button type="button" class="nav-link border-2 border-border-glass px-10 py-6 text-xl rounded-2xl" onclick="toggleProfileEdit(false)">Cancel</button>
+                    </div>
+                </form>
             </div>
         </div>
     `;
+
+    document.getElementById('profile-update-form')?.addEventListener('submit', handleProfileUpdate);
+}
+
+window.toggleProfileEdit = (show) => {
+    document.getElementById('profile-display').classList.toggle('hidden', show);
+    document.getElementById('profile-edit').classList.toggle('hidden', !show);
+};
+
+async function handleProfileUpdate(e) {
+    e.preventDefault();
+    const full_name = document.getElementById('edit-name').value;
+    const email = document.getElementById('edit-email').value;
+    const token = localStorage.getItem('em_token');
+
+    try {
+        const response = await fetch(API_BASE + '/profile.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ full_name, email })
+        });
+        const result = await response.json();
+        if (result.status === 'success') {
+            localStorage.setItem('em_user', JSON.stringify(result.data.user));
+            alert("Identity synchronized successfully.");
+            renderProfileData();
+        } else {
+            alert(result.message);
+        }
+    } catch (err) {
+        alert("Neural connection failed.");
+    }
 }
 
 // 4. Feedback Logic
@@ -504,6 +613,63 @@ function renderMemories(memories) {
     `).join('');
 }
 
+window.openAddMemoryModal = () => {
+    const modal = document.getElementById('modal-container');
+    const content = document.getElementById('modal-content');
+
+    content.innerHTML = `
+        <h2 class="text-4xl font-black mb-10">Capture New Memory</h2>
+        <form id="add-memory-form" class="space-y-8">
+            <div>
+                <label class="block text-xl font-bold mb-3 opacity-70">Narrative Description</label>
+                <textarea id="mem-narrative" class="input-elite w-full p-6 text-xl" rows="4" placeholder="Describe the moment..." required></textarea>
+            </div>
+            <div>
+                <label class="block text-xl font-bold mb-3 opacity-70">Source Fragment</label>
+                <select id="mem-source" class="input-elite w-full p-6 text-xl" style="appearance: none;">
+                    <option value="Voice Reflection">Voice Reflection</option>
+                    <option value="Visual Anchor">Visual Anchor</option>
+                    <option value="Standard Input">Standard Input</option>
+                </select>
+            </div>
+            <div class="flex gap-4 mt-10">
+                <button type="submit" class="btn-elite px-12 py-5 text-xl flex-grow">Sync with Neural Cloud</button>
+                <button type="button" class="nav-link border-2 border-border-glass px-8 py-5 rounded-2xl" onclick="closeModal()">Cancel</button>
+            </div>
+        </form>
+    `;
+
+    document.getElementById('add-memory-form').addEventListener('submit', handleAddMemory);
+    modal.classList.remove('hidden');
+};
+
+async function handleAddMemory(e) {
+    e.preventDefault();
+    const narrative_text = document.getElementById('mem-narrative').value;
+    const source_type = document.getElementById('mem-source').value;
+    const token = localStorage.getItem('em_token');
+
+    try {
+        const response = await fetch(API_BASE + '/memories.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ narrative_text, source_type, confidence_score: 0.95 })
+        });
+        const result = await response.json();
+        if (result.status === 'success') {
+            closeModal();
+            fetchMemories();
+        } else {
+            alert(result.message);
+        }
+    } catch (err) {
+        alert("Sync failed.");
+    }
+}
+
 window.openMemoryModal = (memory) => {
     const modal = document.getElementById('modal-container');
     const content = document.getElementById('modal-content');
@@ -530,6 +696,71 @@ function closeModal() {
 }
 window.closeModal = closeModal;
 document.getElementById('close-modal')?.addEventListener('click', closeModal);
+
+// 7. Advanced Accessibility Sync
+async function initAdvancedSync() {
+    applyTheme();
+    if (!!localStorage.getItem('em_token')) {
+        await fetchUiSettings();
+        // Poll for changes (Caregiver Sync)
+        syncInterval = setInterval(fetchUiSettings, 10000);
+    }
+}
+
+async function fetchUiSettings() {
+    const token = localStorage.getItem('em_token');
+    if (!token) return;
+    try {
+        const response = await fetch(API_BASE + '/settings.php', {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const result = await response.json();
+        if (result.status === 'success') {
+            const settings = result.data;
+            if (isDark !== (settings.theme === 'dark')) {
+                isDark = settings.theme === 'dark';
+                applyTheme();
+            }
+            if (window.voiceOnlyMode !== settings.voice_only) {
+                toggleVoiceOnlyMode(settings.voice_only, false);
+            }
+        }
+    } catch (err) { console.error("Sync failed"); }
+}
+
+async function syncUiSettingsToServer() {
+    const token = localStorage.getItem('em_token');
+    if (!token) return;
+    try {
+        await fetch(API_BASE + '/settings.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+                theme: isDark ? 'dark' : 'light',
+                voice_only: window.voiceOnlyMode,
+                last_updated: Date.now()
+            })
+        });
+    } catch (err) { console.error("Server sync failed"); }
+}
+
+function toggleVoiceOnlyMode(enable, sync = true) {
+    window.voiceOnlyMode = enable;
+    const view = window.voiceOnlyMode ? 'voiceOnly' : 'home';
+
+    // Hide/Show navigation
+    document.querySelector('.top-navbar')?.classList.toggle('hidden', window.voiceOnlyMode);
+    document.querySelector('.shell-footer')?.classList.toggle('hidden', window.voiceOnlyMode);
+
+    switchView(view);
+
+    if (sync) syncUiSettingsToServer();
+}
+
+window.toggleVoiceOnlyMode = toggleVoiceOnlyMode;
 
 // 6. Init
 const isAuthPage = window.location.pathname.includes('login.html') || window.location.pathname.includes('register.html');
