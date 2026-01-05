@@ -82,6 +82,7 @@ function switchView(viewName) {
         if (viewName === 'profile') renderProfileData();
     }
 }
+window.switchView = switchView;
 
 // Global Nav Helper
 window.goToPage = (page) => {
